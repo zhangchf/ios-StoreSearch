@@ -12,6 +12,8 @@
 		F2942FBB1E15036F00E3EDB3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F2942FB91E15036F00E3EDB3 /* Main.storyboard */; };
 		F2942FBD1E15036F00E3EDB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2942FBC1E15036F00E3EDB3 /* Assets.xcassets */; };
 		F2942FC01E15036F00E3EDB3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F2942FBE1E15036F00E3EDB3 /* LaunchScreen.storyboard */; };
+		F2ECF7421E1611E8006101CF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7411E1611E8006101CF /* Constants.swift */; };
+		F2ECF7441E162106006101CF /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7431E162106006101CF /* SearchResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		F2942FBC1E15036F00E3EDB3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F2942FBF1E15036F00E3EDB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F2942FC11E15036F00E3EDB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F2ECF7411E1611E8006101CF /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		F2ECF7431E162106006101CF /* SearchResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +64,8 @@
 				F2942FBC1E15036F00E3EDB3 /* Assets.xcassets */,
 				F2942FBE1E15036F00E3EDB3 /* LaunchScreen.storyboard */,
 				F2942FC11E15036F00E3EDB3 /* Info.plist */,
+				F2ECF7411E1611E8006101CF /* Constants.swift */,
+				F2ECF7431E162106006101CF /* SearchResult.swift */,
 			);
 			path = StoreSearch;
 			sourceTree = "<group>";
@@ -138,6 +144,8 @@
 			files = (
 				F2942FB81E15036F00E3EDB3 /* SearchViewController.swift in Sources */,
 				F2942FB61E15036F00E3EDB3 /* AppDelegate.swift in Sources */,
+				F2ECF7441E162106006101CF /* SearchResult.swift in Sources */,
+				F2ECF7421E1611E8006101CF /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +305,7 @@
 				F2942FC61E15036F00E3EDB3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
