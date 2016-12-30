@@ -7,7 +7,3 @@
 //
 
 import Foundation
-
-class Constants {
-    static let CELL_ID_SEARCH_RESULT = "searchResultTableViewCell"
-}
