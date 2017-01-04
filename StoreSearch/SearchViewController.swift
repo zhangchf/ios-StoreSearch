@@ -9,7 +9,7 @@
 import UIKit
 
 class SearchViewController: UIViewController {
-    let TAG = "SearchViewController: "
+    static let TAG = "SearchViewController: "
     
     let BASE_URL_ITUNES = "https://itunes.apple.com/search?term=%@";
     
@@ -141,28 +141,15 @@ extension SearchViewController {
         let urlString = String(format: BASE_URL_ITUNES, escapedSearchText)
         let url = URL(string: urlString)
         
-        print(TAG, "Search URL: \(url)")
+        print(SearchViewController.TAG, "Search URL: \(url)")
         return url!
     }
     
-    func performWebRequest(url: URL) -> String? {
-        do {
-            return try String(contentsOf: url, encoding: .utf8)
-        } catch {
-            print(TAG, "performWebRequest error: \(error)")
-            return nil
-        }
-    }
-    
-    func parse(jsonStr: String) -> [String: Any]? {
-        guard let jsonData = jsonStr.data(using: .utf8, allowLossyConversion: false) else {
-            return nil
-        }
-        
+    func parse(jsonData: Data) -> [String: Any]? {
         do {
             return try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
         } catch {
-            print(TAG, "parse json error: \(error)")
+            print(SearchViewController.TAG, "parse json error: \(error)")
             return nil
         }
     }
@@ -173,25 +160,38 @@ extension SearchViewController {
         isLoading = true
         tableView.reloadData()
         
-        DispatchQueue.global().async {
+        let dataTask = URLSession.shared.dataTask(with: iTunesUrl(searchText: searchText), completionHandler: {
+            data, response, error in
             
-            if let jsonResult = self.performWebRequest(url: self.iTunesUrl(searchText: searchText)),
-                let jsonObject = self.parse(jsonStr: jsonResult) {
-                print(self.TAG, "jsonObject= \(jsonObject)")
-                self.searchResults = self.parse(dictionary: jsonObject)
-                self.searchResults.sort(by: <)
-                
-                DispatchQueue.main.async {
-                    self.isLoading = false
-                    self.tableView.reloadData()
+            if let error = error {
+                print(SearchViewController.TAG, "Failure! \(error)")
+            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print(SearchViewController.TAG, "Success! \(response)")
+                if let data = data, let jsonObject = self.parse(jsonData: data) {
+                    
+                    print(SearchViewController.TAG, "jsonObject= \(jsonObject)")
+                    self.searchResults = self.parse(dictionary: jsonObject)
+                    self.searchResults.sort(by: <)
+                    
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        self.tableView.reloadData()
+                    }
+                    return
                 }
-                return
+            } else {
+                print(SearchViewController.TAG, "Failure! \(response)")
             }
             
             DispatchQueue.main.async {
+                self.hasSearched = false
+                self.isLoading = false
+                self.tableView.reloadData()
                 self.showNetworkError()
             }
-        }
+        })
+        dataTask.resume()
+        
     }
     
     func showNetworkError() {
@@ -203,7 +203,7 @@ extension SearchViewController {
     
     func parse(dictionary: [String: Any]) -> [SearchResult] {
         guard let resultsArray = dictionary["results"] as? [Any] else {
-            print(TAG, "expected results array")
+            print(SearchViewController.TAG, "expected results array")
             return []
         }
         
