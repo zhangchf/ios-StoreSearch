@@ -37,6 +37,28 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="uCa-i1-OYh"/>
                                 </connections>
                             </searchBar>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u2H-ME-cX4">
+                                <rect key="frame" x="0.0" y="64" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <items>
+                                    <navigationItem id="FLj-lB-UxP">
+                                        <nil key="title"/>
+                                        <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="981-gm-iwk">
+                                            <rect key="frame" x="8" y="8" width="304" height="29"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="All"/>
+                                                <segment title="Music"/>
+                                                <segment title="Software"/>
+                                                <segment title="E-books"/>
+                                            </segments>
+                                            <connections>
+                                                <action selector="segmentChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="0kv-bX-Oqp"/>
+                                            </connections>
+                                        </segmentedControl>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -48,6 +70,7 @@
                     </view>
                     <connections>
                         <outlet property="searchBar" destination="0hm-iy-c7p" id="5yx-Qg-cjZ"/>
+                        <outlet property="segmentedControl" destination="981-gm-iwk" id="XLH-LN-XvB"/>
                         <outlet property="tableView" destination="ejr-X5-6oj" id="ERC-8n-V3g"/>
                     </connections>
                 </viewController>

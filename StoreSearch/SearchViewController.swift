@@ -11,7 +11,7 @@ import UIKit
 class SearchViewController: UIViewController {
     static let TAG = "SearchViewController: "
     
-    let BASE_URL_ITUNES = "https://itunes.apple.com/search?term=%@";
+    let BASE_URL_ITUNES = "https://itunes.apple.com/search?term=%@&limit=200&entity=%@";
     
     struct TableViewCellIdentifiers {
         static let searchResultCell = "SearchResultCell"
@@ -23,16 +23,18 @@ class SearchViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     // Search
     var searchResults: [SearchResult] = []
     var hasSearched = false
     var isLoading = false
+    var dataTask: URLSessionDataTask?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.contentInset = UIEdgeInsets(top: 64, left: 0, bottom: 0, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: 108, left: 0, bottom: 0, right: 0)
     
         let cellNib = UINib(nibName: TableViewCellIdentifiers.searchResultCell, bundle: nil)
         tableView.register(cellNib, forCellReuseIdentifier: TableViewCellIdentifiers.searchResultCell)
@@ -49,6 +51,9 @@ class SearchViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func segmentChanged(_ sender: UISegmentedControl) {
+        performSearch()
+    }
 }
 
 extension SearchViewController: UISearchBarDelegate {
@@ -56,26 +61,32 @@ extension SearchViewController: UISearchBarDelegate {
     func position(for bar: UIBarPositioning) -> UIBarPosition {
         return .topAttached
     }
-
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        performSearch()
+    }
+
+    func performSearch() {
         print("search text: '\(searchBar.text!)'")
-        
         if searchBar.text!.isEmpty {
             return
         }
-        
         searchBar.resignFirstResponder()
         
-        doSearch(searchText: searchBar.text!)
+        let entityName: String
+        switch segmentedControl.selectedSegmentIndex {
+        case 1:
+            entityName = "musicTrack"
+        case 2:
+            entityName = "software"
+        case 3:
+            entityName = "ebook"
+        default:
+            entityName = ""
+        }
+
         
-//        if searchBar.text!.lowercased() != "justin bieber" {
-//            for i in 0...2 {
-//                let searchResult = SearchResult()
-//                searchResult.name = String(format: "Fake result %d", i)
-//                searchResult.artistName = searchBar.text!
-//                searchResults.append(searchResult)
-//            }
-//        }
+        doSearch(searchText: searchBar.text!, entity: entityName)
     }
 }
 
@@ -105,10 +116,8 @@ extension SearchViewController: UITableViewDataSource {
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCellIdentifiers.searchResultCell, for: indexPath) as! SearchResultCell
 
-            let data = searchResults[indexPath.row]
-            cell.nameLabel.text = data.name
-            let artistNameStr = data.artistName.isEmpty ? "Unknown" : String(format: "%@ (%@)", data.artistName, kindForDisplay(data.kind))
-            cell.artistNameLabel.text = artistNameStr
+            let searchResult = searchResults[indexPath.row]
+            cell.configure(searchResult: searchResult)
             
             return cell
         }
@@ -136,9 +145,9 @@ extension SearchViewController: UITableViewDelegate {
 // web request
 extension SearchViewController {
     
-    func iTunesUrl(searchText: String) -> URL {
+    func iTunesUrl(searchText: String, entity: String) -> URL {
         let escapedSearchText = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let urlString = String(format: BASE_URL_ITUNES, escapedSearchText)
+        let urlString = String(format: BASE_URL_ITUNES, escapedSearchText, entity)
         let url = URL(string: urlString)
         
         print(SearchViewController.TAG, "Search URL: \(url)")
@@ -154,17 +163,20 @@ extension SearchViewController {
         }
     }
     
-    func doSearch(searchText: String) {
+    func doSearch(searchText: String, entity: String) {
         hasSearched = true
         searchResults = []
+        
+        dataTask?.cancel()
+        print("after cancel, dataTask=\(dataTask)")
         isLoading = true
         tableView.reloadData()
         
-        let dataTask = URLSession.shared.dataTask(with: iTunesUrl(searchText: searchText), completionHandler: {
+        dataTask = URLSession.shared.dataTask(with: iTunesUrl(searchText: searchText, entity: entity), completionHandler: {
             data, response, error in
             
-            if let error = error {
-                print(SearchViewController.TAG, "Failure! \(error)")
+            if let error = error as? NSError, error.code == -999 {
+                return // search was cancelled
             } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 print(SearchViewController.TAG, "Success! \(response)")
                 if let data = data, let jsonObject = self.parse(jsonData: data) {
@@ -190,7 +202,7 @@ extension SearchViewController {
                 self.showNetworkError()
             }
         })
-        dataTask.resume()
+        dataTask?.resume()
         
     }
     
@@ -309,21 +321,5 @@ extension SearchViewController {
         return searchResult
     }
     
-    
-    func kindForDisplay(_ kind: String) -> String {
-        switch kind {
-            case "album": return "Album"
-            case "audiobook": return "Audio Book"
-            case "book": return "Book"
-            case "ebook": return "E-Book"
-            case "feature-movie": return "Movie"
-            case "music-video": return "Music Video"
-            case "podcast": return "Podcast"
-            case "software": return "App"
-            case "song": return "Song"
-            case "tv-episode": return "TV Episode"
-            default: return kind
-        }
-    }
 }
 
