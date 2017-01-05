@@ -18,13 +18,20 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var genreLabel: UILabel!
     @IBOutlet weak var priceButton: UIButton!
     
+    var searchResult: SearchResult!
     
+    var imgDownloadTask: URLSessionDownloadTask?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         modalPresentationStyle = .custom
         transitioningDelegate = self
+    }
+    
+    deinit {
+        print("deinit \(self)")
+        imgDownloadTask?.cancel()
     }
 
     override func viewDidLoad() {
@@ -37,15 +44,47 @@ class DetailViewController: UIViewController {
         tapGestureRecognizer.cancelsTouchesInView = false
         tapGestureRecognizer.delegate = self
         view.addGestureRecognizer(tapGestureRecognizer)
+        
+        if searchResult != nil {
+            fillData(searchResult: searchResult)
+        }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func fillData(searchResult: SearchResult) {
+        // image
+        artworkImageView.image = UIImage(named: "Placeholder")
+        if let url = URL(string: searchResult.artworkLargeUrl) {
+            imgDownloadTask = artworkImageView.loadImage(imgUrl: url)
+        }
+        
+        nameLabel.text = searchResult.name
+        artistNameLabel.text = searchResult.artistName.isEmpty ? "Unknown" : searchResult.artistName
+        kindLabel.text = searchResult.kindForDisplay()
+        genreLabel.text = searchResult.genre
+        
+        // Price
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = searchResult.currency
+        let priceText: String
+        if searchResult.price == 0.0 {
+            priceText = "Free"
+        } else if let text = formatter.string(from: searchResult.price as NSNumber) {
+            priceText = text
+        } else {
+            priceText = ""
+        }
+        priceButton.setTitle(priceText, for: .normal)
     }
     
     @IBAction func close() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func openInStore() {
+        if let url = URL(string: searchResult.storeUrl) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
     }
 
 }

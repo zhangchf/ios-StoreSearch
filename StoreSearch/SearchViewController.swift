@@ -58,6 +58,13 @@ class SearchViewController: UIViewController {
     @IBAction func segmentChanged(_ sender: UISegmentedControl) {
         performSearch()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == Constants.SEGUE_ID_SHOW_DETAIL, let selectedIndexPath = sender as? IndexPath {
+            let detailViewController = segue.destination as! DetailViewController
+            detailViewController.searchResult = searchResults[selectedIndexPath.row]
+        }
+    }
 }
 
 extension SearchViewController: UISearchBarDelegate {
