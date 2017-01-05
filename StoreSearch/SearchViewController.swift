@@ -44,6 +44,10 @@ class SearchViewController: UIViewController {
         tableView.register(loadingCellNib, forCellReuseIdentifier: TableViewCellIdentifiers.loadingCell)
         
         searchBar.becomeFirstResponder()
+        
+        // For test purpose
+        searchBar.text = "Stephen King"
+        performSearch()
     }
 
     override func didReceiveMemoryWarning() {
@@ -121,9 +125,8 @@ extension SearchViewController: UITableViewDataSource {
             
             return cell
         }
-        
     }
-    
+        
 }
 
 extension SearchViewController: UITableViewDelegate {
@@ -138,6 +141,8 @@ extension SearchViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        performSegue(withIdentifier: Constants.SEGUE_ID_SHOW_DETAIL, sender: indexPath)
     }
     
 }

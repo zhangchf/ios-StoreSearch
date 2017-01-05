@@ -7,3 +7,7 @@
 //
 
 import Foundation
+
+class Constants {
+    static let SEGUE_ID_SHOW_DETAIL = "ShowDetail"
+}

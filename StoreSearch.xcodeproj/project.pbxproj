@@ -18,6 +18,8 @@
 		F2ECF74E1E163CBE006101CF /* NothingFoundCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2ECF74C1E163CBE006101CF /* NothingFoundCell.xib */; };
 		F2ECF7541E1CD0D2006101CF /* LoadingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2ECF7531E1CD0D2006101CF /* LoadingCell.xib */; };
 		F2ECF7561E1DE7E3006101CF /* UIImage+DownloadImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7551E1DE7E3006101CF /* UIImage+DownloadImage.swift */; };
+		F2ECF7581E1E1CE7006101CF /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7571E1E1CE7006101CF /* DetailViewController.swift */; };
+		F2ECF75A1E1E2154006101CF /* DimmingPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7591E1E2154006101CF /* DimmingPresentationController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		F2ECF74C1E163CBE006101CF /* NothingFoundCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NothingFoundCell.xib; sourceTree = "<group>"; };
 		F2ECF7531E1CD0D2006101CF /* LoadingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingCell.xib; sourceTree = "<group>"; };
 		F2ECF7551E1DE7E3006101CF /* UIImage+DownloadImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+DownloadImage.swift"; sourceTree = "<group>"; };
+		F2ECF7571E1E1CE7006101CF /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		F2ECF7591E1E2154006101CF /* DimmingPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimmingPresentationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,8 @@
 				F2ECF74C1E163CBE006101CF /* NothingFoundCell.xib */,
 				F2ECF7531E1CD0D2006101CF /* LoadingCell.xib */,
 				F2ECF7551E1DE7E3006101CF /* UIImage+DownloadImage.swift */,
+				F2ECF7571E1E1CE7006101CF /* DetailViewController.swift */,
+				F2ECF7591E1E2154006101CF /* DimmingPresentationController.swift */,
 			);
 			path = StoreSearch;
 			sourceTree = "<group>";
@@ -159,9 +165,11 @@
 				F2942FB81E15036F00E3EDB3 /* SearchViewController.swift in Sources */,
 				F2942FB61E15036F00E3EDB3 /* AppDelegate.swift in Sources */,
 				F2ECF7441E162106006101CF /* SearchResult.swift in Sources */,
+				F2ECF75A1E1E2154006101CF /* DimmingPresentationController.swift in Sources */,
 				F2ECF7421E1611E8006101CF /* Constants.swift in Sources */,
 				F2ECF74A1E1637A6006101CF /* SearchResultCell.swift in Sources */,
 				F2ECF7561E1DE7E3006101CF /* UIImage+DownloadImage.swift in Sources */,
+				F2ECF7581E1E1CE7006101CF /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
