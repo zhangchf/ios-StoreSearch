@@ -30,6 +30,13 @@ class SearchViewController: UIViewController {
     var hasSearched = false
     var isLoading = false
     var dataTask: URLSessionDataTask?
+    
+    // LandscapeViewController
+    var landscapeViewController: LandscapeViewController?
+    
+    deinit {
+        print("deinit \(self)")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -346,6 +353,42 @@ extension SearchViewController {
         }
         return searchResult
     }
+}
+
+// MARK: - LandscapeViewController
+extension SearchViewController {
     
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        switch newCollection.verticalSizeClass {
+        case .compact:
+            print("rotate to landscape")
+            showLandscape(with:coordinator)
+        case .regular, .unspecified:
+            print("rotate to portrait")
+            hideLandscape(with: coordinator)
+        }
+    }
+    
+    func showLandscape(with coordinator: UIViewControllerTransitionCoordinator) {
+        guard landscapeViewController == nil else {
+            return
+        }
+        landscapeViewController = storyboard?.instantiateViewController(withIdentifier: Constants.STORYBOARD_ID_LANDSCAPE_VIEW_CONTROLLER) as? LandscapeViewController
+        if let controller = landscapeViewController {
+            controller.view.frame = view.bounds
+            view.addSubview(controller.view)
+            addChildViewController(controller)
+            controller.didMove(toParentViewController: self)
+        }
+    }
+    
+    func hideLandscape(with coordinator: UIViewControllerTransitionCoordinator) {
+        if let controller = landscapeViewController {
+            controller.willMove(toParentViewController: self)
+            controller.view.removeFromSuperview()
+            controller.removeFromParentViewController()
+            landscapeViewController = nil
+        }
+    }
 }
 
