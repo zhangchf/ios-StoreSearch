@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -25,27 +26,29 @@
                             <constraint firstAttribute="width" constant="60" id="saR-sB-gdJ"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pni-9D-T2o">
-                        <rect key="frame" x="90" y="15" width="222" height="22"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BQj-mz-A0I">
-                        <rect key="frame" x="90" y="44" width="222" height="18"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                        <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
-                        <nil key="highlightedColor"/>
-                    </label>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="YKU-5s-0DP">
+                        <rect key="frame" x="90" y="15" width="49" height="50"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pni-9D-T2o">
+                                <rect key="frame" x="0.0" y="0.0" width="49" height="24"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BQj-mz-A0I">
+                                <rect key="frame" x="0.0" y="32" width="49" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="pni-9D-T2o" secondAttribute="trailing" constant="8" id="EaP-w7-Mrh"/>
-                    <constraint firstItem="BQj-mz-A0I" firstAttribute="leading" secondItem="2g0-qU-iA4" secondAttribute="trailing" constant="15" id="Ian-gR-qpT"/>
+                    <constraint firstItem="YKU-5s-0DP" firstAttribute="leading" secondItem="2g0-qU-iA4" secondAttribute="trailing" constant="15" id="3KL-NR-DBj"/>
+                    <constraint firstItem="YKU-5s-0DP" firstAttribute="centerY" secondItem="WBz-US-AhA" secondAttribute="centerY" id="LAG-rV-8T3"/>
                     <constraint firstItem="2g0-qU-iA4" firstAttribute="top" secondItem="WBz-US-AhA" secondAttribute="top" constant="10" id="Pus-ra-aZl"/>
-                    <constraint firstItem="pni-9D-T2o" firstAttribute="top" secondItem="WBz-US-AhA" secondAttribute="top" constant="15" id="SQC-Gu-qNQ"/>
-                    <constraint firstAttribute="trailing" secondItem="BQj-mz-A0I" secondAttribute="trailing" constant="8" id="WrI-6D-DjY"/>
-                    <constraint firstAttribute="bottom" secondItem="BQj-mz-A0I" secondAttribute="bottom" constant="17" id="Yfc-Ar-GwS"/>
-                    <constraint firstItem="pni-9D-T2o" firstAttribute="leading" secondItem="2g0-qU-iA4" secondAttribute="trailing" constant="15" id="ypg-jX-mxT"/>
+                    <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="YKU-5s-0DP" secondAttribute="trailing" id="Zd8-pe-ye9"/>
                     <constraint firstItem="2g0-qU-iA4" firstAttribute="leading" secondItem="WBz-US-AhA" secondAttribute="leading" constant="15" id="zSn-1c-7GD"/>
                 </constraints>
             </tableViewCellContentView>

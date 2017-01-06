@@ -19,6 +19,9 @@ class SearchResultCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        nameLabel.adjustsFontForContentSizeCategory = true
+        artistNameLabel.adjustsFontForContentSizeCategory = true
+        
         let selectedView = UIView(frame: CGRect.zero)
         selectedView.backgroundColor = UIColor(red: 20/255, green: 160/255, blue: 160/255, alpha: 0.5)
         selectedBackgroundView = selectedView
@@ -37,6 +40,7 @@ class SearchResultCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        
         print("SearchResultCell prepareForReuse")
         downloadImageTask?.cancel()
         downloadImageTask = nil

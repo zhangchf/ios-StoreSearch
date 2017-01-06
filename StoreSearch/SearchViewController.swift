@@ -45,6 +45,8 @@ class SearchViewController: UIViewController {
         
         searchBar.becomeFirstResponder()
         
+        registerNotification()
+        
         // For test purpose
         searchBar.text = "Stephen King"
         performSearch()
@@ -64,6 +66,18 @@ class SearchViewController: UIViewController {
             let detailViewController = segue.destination as! DetailViewController
             detailViewController.searchResult = searchResults[selectedIndexPath.row]
         }
+    }
+    
+    func refresh() {
+        tableView.reloadData()
+    }
+    
+    
+    func registerNotification() {
+        NotificationCenter.default.addObserver(forName: Notification.Name.UIContentSizeCategoryDidChange, object: nil, queue: OperationQueue.main, using: {_ in
+            print("UIContentSizeCategoryDidChange Notification")
+            self.refresh()
+        })
     }
 }
 
