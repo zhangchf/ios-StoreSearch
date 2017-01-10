@@ -6,7 +6,7 @@
 //  Copyright © 2017 Chaofan Zhang. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 typealias SearchComplete = (Bool) -> ()
 
@@ -66,6 +66,7 @@ class Search {
         print("after cancel, dataTask=\(dataTask)")
         state = .loading
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         dataTask = URLSession.shared.dataTask(with: iTunesUrl(searchText: searchText, category: category), completionHandler: {
             data, response, error in
             
@@ -97,6 +98,7 @@ class Search {
             }
             
             DispatchQueue.main.async {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 completion(success)
             }
             
