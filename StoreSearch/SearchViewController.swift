@@ -11,8 +11,6 @@ import UIKit
 class SearchViewController: UIViewController {
     static let TAG = "SearchViewController: "
     
-    let BASE_URL_ITUNES = "https://itunes.apple.com/search?term=%@&limit=200&entity=%@";
-    
     struct TableViewCellIdentifiers {
         static let searchResultCell = "SearchResultCell"
         static let nothingFoundCell = "NothingFoundCell"
@@ -25,14 +23,13 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     
-    // Search
-    var searchResults: [SearchResult] = []
-    var hasSearched = false
-    var isLoading = false
-    var dataTask: URLSessionDataTask?
     
     // LandscapeViewController
     var landscapeViewController: LandscapeViewController?
+    
+    // Search function
+    let search = Search()
+    
     
     deinit {
         print("deinit \(self)")
@@ -68,10 +65,50 @@ class SearchViewController: UIViewController {
         performSearch()
     }
     
+    
+    func performSearch() {
+        print("search text: '\(searchBar.text!)'")
+        if searchBar.text!.isEmpty {
+            return
+        }
+        searchBar.resignFirstResponder()
+        
+        let entityName: String
+        switch segmentedControl.selectedSegmentIndex {
+        case 1:
+            entityName = "musicTrack"
+        case 2:
+            entityName = "software"
+        case 3:
+            entityName = "ebook"
+        default:
+            entityName = ""
+        }
+        
+        
+        search.doSearch(searchText: searchBar.text!, entity: entityName, completion: {
+            success in
+            if !success {
+                self.showNetworkError()
+            }
+            self.tableView.reloadData()
+        })
+        
+        tableView.reloadData()
+    }
+
+    
+    func showNetworkError() {
+        let alertController = UIAlertController(title: "Whoops...", message: "There was an error reading from iTuens Store. Please try again.", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == Constants.SEGUE_ID_SHOW_DETAIL, let selectedIndexPath = sender as? IndexPath {
             let detailViewController = segue.destination as! DetailViewController
-            detailViewController.searchResult = searchResults[selectedIndexPath.row]
+            detailViewController.searchResult = search.searchResults[selectedIndexPath.row]
         }
     }
     
@@ -97,58 +134,35 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         performSearch()
     }
-
-    func performSearch() {
-        print("search text: '\(searchBar.text!)'")
-        if searchBar.text!.isEmpty {
-            return
-        }
-        searchBar.resignFirstResponder()
-        
-        let entityName: String
-        switch segmentedControl.selectedSegmentIndex {
-        case 1:
-            entityName = "musicTrack"
-        case 2:
-            entityName = "software"
-        case 3:
-            entityName = "ebook"
-        default:
-            entityName = ""
-        }
-
-        
-        doSearch(searchText: searchBar.text!, entity: entityName)
-    }
 }
 
 extension SearchViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isLoading {
+        if search.isLoading {
             return 1
-        } else if !hasSearched {
+        } else if !search.hasSearched {
             return 0
-        } else if searchResults.count == 0 {
+        } else if search.searchResults.count == 0 {
             return 1
         } else {
-            return searchResults.count
+            return search.searchResults.count
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if isLoading {
+        if search.isLoading {
             let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCellIdentifiers.loadingCell, for: indexPath)
             let activityIndicator = cell.viewWithTag(TAG_LOADING_CELL_ACTIVITY_INDICATOR) as! UIActivityIndicatorView
             activityIndicator.startAnimating()
             return cell
-        } else if searchResults.count == 0 {
+        } else if search.searchResults.count == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCellIdentifiers.nothingFoundCell, for: indexPath)
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCellIdentifiers.searchResultCell, for: indexPath) as! SearchResultCell
 
-            let searchResult = searchResults[indexPath.row]
+            let searchResult = search.searchResults[indexPath.row]
             cell.configure(searchResult: searchResult)
             
             return cell
@@ -160,7 +174,7 @@ extension SearchViewController: UITableViewDataSource {
 extension SearchViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if searchResults.count == 0 || isLoading {
+        if search.searchResults.count == 0 || search.isLoading {
             return nil
         } else {
             return indexPath
@@ -175,185 +189,7 @@ extension SearchViewController: UITableViewDelegate {
     
 }
 
-// web request
-extension SearchViewController {
-    
-    func iTunesUrl(searchText: String, entity: String) -> URL {
-        let escapedSearchText = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let urlString = String(format: BASE_URL_ITUNES, escapedSearchText, entity)
-        let url = URL(string: urlString)
-        
-        print(SearchViewController.TAG, "Search URL: \(url)")
-        return url!
-    }
-    
-    func parse(jsonData: Data) -> [String: Any]? {
-        do {
-            return try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-        } catch {
-            print(SearchViewController.TAG, "parse json error: \(error)")
-            return nil
-        }
-    }
-    
-    func doSearch(searchText: String, entity: String) {
-        hasSearched = true
-        searchResults = []
-        
-        dataTask?.cancel()
-        print("after cancel, dataTask=\(dataTask)")
-        isLoading = true
-        tableView.reloadData()
-        
-        dataTask = URLSession.shared.dataTask(with: iTunesUrl(searchText: searchText, entity: entity), completionHandler: {
-            data, response, error in
-            
-            if let error = error as? NSError, error.code == -999 {
-                return // search was cancelled
-            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                print(SearchViewController.TAG, "Success! \(response)")
-                if let data = data, let jsonObject = self.parse(jsonData: data) {
-                    
-                    print(SearchViewController.TAG, "jsonObject= \(jsonObject)")
-                    self.searchResults = self.parse(dictionary: jsonObject)
-                    self.searchResults.sort(by: <)
-                    
-                    DispatchQueue.main.async {
-                        self.isLoading = false
-                        self.tableView.reloadData()
-                    }
-                    return
-                }
-            } else {
-                print(SearchViewController.TAG, "Failure! \(response)")
-            }
-            
-            DispatchQueue.main.async {
-                self.hasSearched = false
-                self.isLoading = false
-                self.tableView.reloadData()
-                self.showNetworkError()
-            }
-        })
-        dataTask?.resume()
-        
-    }
-    
-    func showNetworkError() {
-        let alertController = UIAlertController(title: "Whoops...", message: "There was an error reading from iTuens Store. Please try again.", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alertController.addAction(okAction)
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    func parse(dictionary: [String: Any]) -> [SearchResult] {
-        guard let resultsArray = dictionary["results"] as? [Any] else {
-            print(SearchViewController.TAG, "expected results array")
-            return []
-        }
-        
-        var searchResults = [SearchResult]()
-        
-        for resultDict in resultsArray {
-            if let resultDict = resultDict as? [String: Any] {
-                var searchResult: SearchResult?
-                if let wrapperType = resultDict["wrapperType"] as? String {
-                    switch wrapperType {
-                    case "track":
-                        searchResult = parse(track: resultDict)
-                    case "audiobook":
-                        searchResult = parse(audiobook: resultDict)
-                        case "software":
-                        searchResult = parse(software: resultDict)
-                    default:
-                        break
-                    }
-                } else if let kind = resultDict["kind"] as? String, kind == "ebook" {
-                    searchResult = parse(ebook: resultDict)
-                }
-                if let searchResult = searchResult {
-                    searchResults.append(searchResult)
-                }
-            }
-        }
-        
-        return searchResults
-    }
-    
-    func parse(track dictionary: [String: Any]) -> SearchResult {
-        let searchResult = SearchResult()
-        
-        searchResult.name = dictionary["trackName"] as! String
-        searchResult.artistName = dictionary["artistName"] as! String
-        searchResult.artworkSmallUrl = dictionary["artworkUrl60"] as! String
-        searchResult.artworkLargeUrl = dictionary["artworkUrl100"] as! String
-        searchResult.storeUrl = dictionary["trackViewUrl"] as! String
-        searchResult.kind = dictionary["kind"] as! String
-        searchResult.currency = dictionary["currency"] as! String
-        
-        if let price = dictionary["trackPrice"] as? Double {
-            searchResult.price = price
-        }
-        if let genre = dictionary["primaryGenreName"] as? String {
-            searchResult.genre = genre
-        }
-        return searchResult
-    }
-    
-    func parse(audiobook dictionary: [String: Any]) -> SearchResult {
-        let searchResult = SearchResult()
-        searchResult.name = dictionary["collectionName"] as! String
-        searchResult.artistName = dictionary["artistName"] as! String
-        searchResult.artworkSmallUrl = dictionary["artworkUrl60"] as! String
-        searchResult.artworkLargeUrl = dictionary["artworkUrl100"] as! String
-        searchResult.storeUrl = dictionary["collectionViewUrl"] as! String
-        searchResult.kind = "audiobook"
-        searchResult.currency = dictionary["currency"] as! String
-        if let price = dictionary["collectionPrice"] as? Double {
-            searchResult.price = price
-        }
-        if let genre = dictionary["primaryGenreName"] as? String {
-            searchResult.genre = genre
-        }
-        return searchResult
-    }
-    
-    func parse(software dictionary: [String: Any]) -> SearchResult {
-        let searchResult = SearchResult()
-        searchResult.name = dictionary["trackName"] as! String
-        searchResult.artistName = dictionary["artistName"] as! String
-        searchResult.artworkSmallUrl = dictionary["artworkUrl60"] as! String
-        searchResult.artworkLargeUrl = dictionary["artworkUrl100"] as! String
-        searchResult.storeUrl = dictionary["trackViewUrl"] as! String
-        searchResult.kind = dictionary["kind"] as! String
-        searchResult.currency = dictionary["currency"] as! String
-        if let price = dictionary["price"] as? Double {
-            searchResult.price = price
-        }
-        if let genre = dictionary["primaryGenreName"] as? String {
-            searchResult.genre = genre
-        }
-        return searchResult
-    }
-    
-    func parse(ebook dictionary: [String: Any]) -> SearchResult {
-        let searchResult = SearchResult()
-        searchResult.name = dictionary["trackName"] as! String
-        searchResult.artistName = dictionary["artistName"] as! String
-        searchResult.artworkSmallUrl = dictionary["artworkUrl60"] as! String
-        searchResult.artworkLargeUrl = dictionary["artworkUrl100"] as! String
-        searchResult.storeUrl = dictionary["trackViewUrl"] as! String
-        searchResult.kind = dictionary["kind"] as! String
-        searchResult.currency = dictionary["currency"] as! String
-        if let price = dictionary["price"] as? Double {
-            searchResult.price = price
-        }
-        if let genres: Any = dictionary["genres"] {
-            searchResult.genre = (genres as! [String]).joined(separator: ", ")
-        }
-        return searchResult
-    }
-}
+
 
 // MARK: - LandscapeViewController
 extension SearchViewController {
@@ -376,7 +212,7 @@ extension SearchViewController {
         landscapeViewController = storyboard?.instantiateViewController(withIdentifier: Constants.STORYBOARD_ID_LANDSCAPE_VIEW_CONTROLLER) as? LandscapeViewController
         if let controller = landscapeViewController {
             // Init searchResults.
-            controller.searchResults = searchResults
+            controller.search = search
             
             controller.view.frame = view.bounds
             view.addSubview(controller.view)

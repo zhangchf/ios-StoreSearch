@@ -25,6 +25,7 @@
 		F2ECF7621E1F7D37006101CF /* SlideOutAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7611E1F7D37006101CF /* SlideOutAnimationController.swift */; };
 		F2ECF7641E1F92CA006101CF /* LandscapeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7631E1F92CA006101CF /* LandscapeViewController.swift */; };
 		F2ECF7661E2369F7006101CF /* FadeOutAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7651E2369F5006101CF /* FadeOutAnimationController.swift */; };
+		F2ECF7681E24BB03006101CF /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECF7671E24BB03006101CF /* Search.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		F2ECF7611E1F7D37006101CF /* SlideOutAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideOutAnimationController.swift; sourceTree = "<group>"; };
 		F2ECF7631E1F92CA006101CF /* LandscapeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandscapeViewController.swift; sourceTree = "<group>"; };
 		F2ECF7651E2369F5006101CF /* FadeOutAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FadeOutAnimationController.swift; sourceTree = "<group>"; };
+		F2ECF7671E24BB03006101CF /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 				F2ECF7611E1F7D37006101CF /* SlideOutAnimationController.swift */,
 				F2ECF7631E1F92CA006101CF /* LandscapeViewController.swift */,
 				F2ECF7651E2369F5006101CF /* FadeOutAnimationController.swift */,
+				F2ECF7671E24BB03006101CF /* Search.swift */,
 			);
 			path = StoreSearch;
 			sourceTree = "<group>";
@@ -190,6 +193,7 @@
 				F2ECF7561E1DE7E3006101CF /* UIImage+DownloadImage.swift in Sources */,
 				F2ECF7641E1F92CA006101CF /* LandscapeViewController.swift in Sources */,
 				F2ECF7581E1E1CE7006101CF /* DetailViewController.swift in Sources */,
+				F2ECF7681E24BB03006101CF /* Search.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
