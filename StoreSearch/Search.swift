@@ -14,21 +14,37 @@ class Search {
     
     let BASE_URL_ITUNES = "https://itunes.apple.com/search?term=%@&limit=200&entity=%@";
     
+    enum Category: Int {
+        case all = 0
+        case music = 1
+        case software = 2
+        case ebooks = 3
+        
+        var entityName: String {
+            switch self {
+            case .all: return ""
+            case .music: return "musicTrack"
+            case .software: return "software"
+            case .ebooks: return "ebook"
+            }
+        }
+    }
+    
+    enum State {
+        case notSearchedYet
+        case loading
+        case noResults
+        case results([SearchResult])
+    }
+    
     // Search
-    var searchResults: [SearchResult] = []
-    var hasSearched = false
-    var isLoading = false
+    private(set) var state: State = .notSearchedYet
     var dataTask: URLSessionDataTask?
-    
-    
-}
 
-// web request
-extension Search {
     
-    func iTunesUrl(searchText: String, entity: String) -> URL {
+    func iTunesUrl(searchText: String, category: Category) -> URL {
         let escapedSearchText = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let urlString = String(format: BASE_URL_ITUNES, escapedSearchText, entity)
+        let urlString = String(format: BASE_URL_ITUNES, escapedSearchText, category.entityName)
         let url = URL(string: urlString)
         
         print(SearchViewController.TAG, "Search URL: \(url)")
@@ -44,29 +60,32 @@ extension Search {
         }
     }
     
-    func doSearch(searchText: String, entity: String, completion: @escaping SearchComplete) {
-        hasSearched = true
-        searchResults = []
-        
+    func doSearch(searchText: String, category: Category, completion: @escaping SearchComplete) {
+
         dataTask?.cancel()
         print("after cancel, dataTask=\(dataTask)")
-        isLoading = true
+        state = .loading
         
-        dataTask = URLSession.shared.dataTask(with: iTunesUrl(searchText: searchText, entity: entity), completionHandler: {
+        dataTask = URLSession.shared.dataTask(with: iTunesUrl(searchText: searchText, category: category), completionHandler: {
             data, response, error in
             
             var success = false
             if let error = error as? NSError, error.code == -999 {
-//                return // search was cancelled
+                return // search was cancelled
             } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 print(SearchViewController.TAG, "Success! \(response)")
                 if let data = data, let jsonObject = self.parse(jsonData: data) {
                     
                     print(SearchViewController.TAG, "jsonObject= \(jsonObject)")
-                    self.searchResults = self.parse(dictionary: jsonObject)
-                    self.searchResults.sort(by: <)
+                    var searchResults = self.parse(dictionary: jsonObject)
+                    searchResults.sort(by: <)
                     
-                    self.isLoading = false
+
+                    if searchResults.isEmpty {
+                        self.state = .noResults
+                    } else {
+                        self.state = .results(searchResults)
+                    }
                     success = true
                 }
             } else {
@@ -74,8 +93,7 @@ extension Search {
             }
             
             if !success {
-                self.hasSearched = false
-                self.isLoading = false
+                self.state = .notSearchedYet
             }
             
             DispatchQueue.main.async {
