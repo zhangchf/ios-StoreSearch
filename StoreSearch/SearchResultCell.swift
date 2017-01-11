@@ -29,7 +29,7 @@ class SearchResultCell: UITableViewCell {
     
     func configure(searchResult: SearchResult) {
         nameLabel.text = searchResult.name
-        let artistNameStr = searchResult.artistName.isEmpty ? "Unknown" : String(format: "%@ (%@)", searchResult.artistName, searchResult.kindForDisplay())
+        let artistNameStr = searchResult.artistName.isEmpty ? NSLocalizedString("Unknown", comment: "Unknown artist name") : String(format: NSLocalizedString("FORMAT_STRING_ARTIST_NAME", comment: "artist name format string: %@ (%@)"), searchResult.artistName, searchResult.kindForDisplay())
         artistNameLabel.text = artistNameStr
         
         artworkImageView.image = #imageLiteral(resourceName: "Placeholder")

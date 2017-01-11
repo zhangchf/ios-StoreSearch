@@ -12,7 +12,7 @@ typealias SearchComplete = (Bool) -> ()
 
 class Search {
     
-    let BASE_URL_ITUNES = "https://itunes.apple.com/search?term=%@&limit=200&entity=%@";
+    let BASE_URL_ITUNES = "https://itunes.apple.com/search?term=%@&limit=200&entity=%@&lang=%@&country=%@";
     
     enum Category: Int {
         case all = 0
@@ -43,8 +43,13 @@ class Search {
 
     
     func iTunesUrl(searchText: String, category: Category) -> URL {
+        
+        let locale = Locale.autoupdatingCurrent
+        let language = locale.identifier
+        let countryCode = locale.regionCode ?? "en_US"
+        
         let escapedSearchText = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let urlString = String(format: BASE_URL_ITUNES, escapedSearchText, category.entityName)
+        let urlString = String(format: BASE_URL_ITUNES, escapedSearchText, category.entityName, language, countryCode)
         let url = URL(string: urlString)
         
         print(SearchViewController.TAG, "Search URL: \(url)")

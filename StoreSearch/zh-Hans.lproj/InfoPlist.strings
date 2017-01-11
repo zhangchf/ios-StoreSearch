@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  StoreSearch
+
+  Created by Chaofan Zhang on 11/01/2017.
+  Copyright © 2017 Chaofan Zhang. All rights reserved.
+*/
+
+CFBundleDisplayName = "搜索商店";

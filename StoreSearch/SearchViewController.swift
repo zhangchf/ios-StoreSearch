@@ -87,8 +87,11 @@ class SearchViewController: UIViewController {
 
     
     func showNetworkError() {
-        let alertController = UIAlertController(title: "Whoops...", message: "There was an error reading from iTuens Store. Please try again.", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        let alertController = UIAlertController(
+            title: NSLocalizedString("Whoops...", comment: "network error alert title"),
+            message: NSLocalizedString("There was an error reading from iTuens Store. Please try again.", comment: "network error alert msg"),
+            preferredStyle: .alert)
+        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "ok button"), style: .default, handler: nil)
         alertController.addAction(okAction)
         present(alertController, animated: true, completion: nil)
     }

@@ -69,7 +69,7 @@ class DetailViewController: UIViewController {
         }
         
         nameLabel.text = searchResult.name
-        artistNameLabel.text = searchResult.artistName.isEmpty ? "Unknown" : searchResult.artistName
+        artistNameLabel.text = searchResult.artistName.isEmpty ? NSLocalizedString("Unknown", comment: "unknown artist name") : searchResult.artistName
         kindLabel.text = searchResult.kindForDisplay()
         genreLabel.text = searchResult.genre
         
@@ -79,7 +79,7 @@ class DetailViewController: UIViewController {
         formatter.currencyCode = searchResult.currency
         let priceText: String
         if searchResult.price == 0.0 {
-            priceText = "Free"
+            priceText = NSLocalizedString("Free", comment: "store item price: free")
         } else if let text = formatter.string(from: searchResult.price as NSNumber) {
             priceText = text
         } else {
